@@ -1,0 +1,34 @@
+[[pages]]
+path = "main.py"
+name = "Home"
+icon = "🏠"
+
+[[pages]]
+path = "pages/cadastros.py"
+name = "Cadastros"
+icon = ":pencil:"
+
+[[pages]]
+path = "pages/dashboard.py"
+name = "Dashboard"
+icon = ":chart_with_upwards_trend:"
+
+[[pages]]
+path = "pages/category/form_category.py"
+name = "Categorias"
+
+[[pages]]
+path = "pages/sector/form_sector.py"
+name = "Setores"
+
+[[pages]]
+path = "pages/asset/form_asset.py"
+name = "Ativos"
+
+[[pages]]
+path = "pages/capital_injection.py"
+name = "Aportes"
+
+[[pages]]
+path = "pages/operations.py"
+name = "Operações"

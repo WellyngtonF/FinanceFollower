@@ -1,9 +1,16 @@
 import streamlit as st
 
+from components.sidebar import render_sidebar
+
 st.set_page_config('Home')
+
+with open('./styles/main.css')as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html = True)
 
 # Render the home page
 def render_home_page():
+    render_sidebar()
+
     st.markdown("""
     # Finance Follower
 
