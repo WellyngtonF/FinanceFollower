@@ -36,7 +36,11 @@ def get_historical_close_price(symbol: str, start_date: str, is_usd: bool = Fals
     # start_date = datetime.strptime('2023-03-01', '%Y-%m-%d')
     # end_date = datetime.strptime('2023-03-05', '%Y-%m-%d')
     ticker = yf.Ticker(symbol)
-    hist = ticker.history(start=start_date, end=end_date)
+    try:
+        hist = ticker.history(start=start_date, end=end_date)
+    except IndexError as e:
+        print("Não foram encontrado dados para a data atual, recuperando fechamento do dia anterior")
+        hist = get_previous_trading_data(ticker, start_date - timedelta(1))
 
     if hist.empty and (end_date - start_date).days <= 1:
         hist = get_previous_trading_data(ticker, start_date - timedelta(1))
