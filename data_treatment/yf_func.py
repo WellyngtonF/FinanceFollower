@@ -62,6 +62,7 @@ def get_historical_close_price(symbol: str, start_date: str, is_usd: bool = Fals
     hist.index.name = 'index'
 
     if is_usd: 
+        brl_df['Date'] = pd.to_datetime(brl_df['Date']).dt.date
         hist = pd.merge(hist, brl_df, how='left', on='Date')
         hist['Close'] = hist['Close_x'] * hist['Close_y']
 

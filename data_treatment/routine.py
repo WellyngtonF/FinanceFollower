@@ -30,7 +30,7 @@ def insert_asset(idasset: int, ticker: str, start_date: str = None, is_usd:bool 
             rentability.insert_asset_rentability(idasset, row['Close'], row['Date'])
         
 def insert_asset_historical_rentability(initial_date: str = None, end_date: str = None):
-    brl_df = get_historical_close_price('BRL=X', operation.get_minimal_operational_date(), end_date=datetime.today().date())
+    brl_df = get_historical_close_price('BRL=X', (initial_date if initial_date else operation.get_minimal_operational_date()), end_date=datetime.today().date())
     assets = asset.get_assets_with_date()
     for _, row in assets.iterrows():
         if initial_date <= row['start_date'].date():
@@ -48,5 +48,5 @@ def verify_inserted_rentability() -> None:
     days = diff.days
     
     if days > 0:
-        initial_date = start_date + timedelta(days)
-        insert_asset_historical_rentability(initial_date, end_date=(initial_date + timedelta(1)))
+        end_date = start_date + timedelta(days + 1)
+        insert_asset_historical_rentability(initial_date=(start_date + timedelta(1)), end_date=end_date)

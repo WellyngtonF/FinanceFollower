@@ -133,8 +133,8 @@ def render_dash_page():
 
     tabs = st.tabs(tabs_name.tolist())
 
-    percentile_wallet = rentability.get_percentile_wallet()
     verify_inserted_rentability()
+    percentile_wallet = rentability.get_percentile_wallet()
     with tabs[0]:
         render_general_tab(percentile_wallet)
         
