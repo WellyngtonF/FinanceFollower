@@ -395,12 +395,16 @@ class RNRentability(RNBase):
             df['invested'] = df.apply(lambda row: row['invested'] * row['usd_dca'] if row['is_usd'] == 1 else row['invested'], axis=1)
             df['rentability'] = ((df['amount'] / df['invested']) - 1) * 100
 
-            df = df.rename(columns={'description': 'Ativo', 'invested': 'Investido (R$)', 'invested_usd': 'Investido ($)', 'amount': 'Atual (R$)', 'rentability': 'Rentabilidade'})
+            df = df.rename(columns={
+                'description': 'Ativo', 'invested': 'Investido (R$)', 'invested_usd': 'Investido ($)', 
+                'amount': 'Atual (R$)', 'rentability': 'Rentabilidade'})
 
             if df['is_usd'].max() == 1:
-                df = df[['Ativo', 'Investido ($)', 'Investido (R$)', 'Atual (R$)', 'Rentabilidade']]
+                df = df.rename(columns={'average_price': 'Preço médio ($)', 'price': 'Preço Atual ($)'})
+                df = df[['Ativo', 'Preço médio ($)', 'Preço Atual ($)', 'Investido ($)', 'Investido (R$)', 'Atual (R$)', 'Rentabilidade']]
             else:
-                df = df[['Ativo', 'Investido (R$)', 'Atual (R$)', 'Rentabilidade']]
+                df = df.rename(columns={'average_price': 'Preço médio (R$)', 'price': 'Preço Atual (R$)'})
+                df = df[['Ativo', 'Preço médio (R$)', 'Preço Atual (R$)', 'Investido (R$)', 'Atual (R$)', 'Rentabilidade']]
 
         except Exception as e:
             df = pd.DataFrame([])
