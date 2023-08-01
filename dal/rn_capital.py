@@ -23,6 +23,11 @@ GET_INVESTED_CATEGORY = """
         A.is_usd
 """
 
+GET_INVESTED_VALUE = """
+    SELECT SUM(amount) invested
+    FROM capital_injection
+"""
+
 class RNCapital(RNBase):    
     def insert_capital(self, amount, injection_date) -> None:
         # Get the current datetime
@@ -64,3 +69,17 @@ class RNCapital(RNBase):
             self.close_connection()
 
         return df
+    
+    def get_invested(self) -> float:
+        try:
+            self.create_connection()
+            df = self.select_to_dataframe(GET_INVESTED_VALUE)
+            invested = float(df['invested'][0])
+            
+        except Exception as e:
+            invested = 0
+            print("Error occurred while getting capital injection:", str(e))
+
+        finally:
+            self.close_connection()
+        return invested

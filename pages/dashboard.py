@@ -10,6 +10,7 @@ from dal.rn_rentability import RNRentability
 from dal.rn_operations import RNOperation
 from dal.rn_category import RNCategory
 from dal.rn_sector import RNSector
+from dal.rn_capital import RNCapital
 from data_treatment.routine import verify_inserted_rentability
 
 from charts.nominal import render_nominal_chart
@@ -27,6 +28,7 @@ rentability = RNRentability()
 operation = RNOperation()
 category = RNCategory()
 sector = RNSector()
+capital = RNCapital()
 category_df = category.get_categorys()
 
 def render_general_tab(percentile_wallet: pd.DataFrame):
@@ -34,7 +36,7 @@ def render_general_tab(percentile_wallet: pd.DataFrame):
 
     df = rentability.get_categorys_rentability(percentile_wallet)
 
-    invested_value = round(df['Investido (R$)'].sum(),2)
+    invested_value = round(capital.get_invested(),2)
     actual_value = round(df['Atual (R$)'].sum(),2)
     rentability_value = str(round(((actual_value/invested_value) - 1) * 100,2)) + '%'
 

@@ -41,8 +41,9 @@ GET_CATEGORY_RENTABILITY = """
         FROM asset_rentability
     )
 
-    SELECT a.idcategory, SUM(O.quantity * AR.price) amount, d.date
+    SELECT a.idcategory, SUM(O.quantity * AR.price) amount, d.date, MAX(C.cash_usd) cash_usd, MAX(C.cash_brl) cash_brl
     FROM asset a
+    INNER JOIN category C on C.idcategory = A.idcategory
     CROSS JOIN all_dates AS d
     LEFT JOIN operations o ON a.idasset = o.idasset AND o.direction = 1 AND o.date_operation <= d.date
     INNER JOIN asset_rentability AR ON A.idasset = AR.idasset AND AR.date = d.date
@@ -77,6 +78,7 @@ GET_WALLET_TOTAL = """
 GET_ASSET_QUANTITY = """
     SELECT idasset, idcategory, idsector, ticker, description, quantity, average_price, is_usd, (quantity * average_price) invested
     FROM asset
+    WHERE quantity > 0
 """
 
 category, sector = [RNCategory(), RNSector()]
@@ -107,14 +109,14 @@ class RNRentability(RNBase):
 
     def insert_category_rentability(self, category_id: str, start_date: str) -> None:
         category_rentability = self.select_to_dataframe(GET_CATEGORY_RENTABILITY, [category_id, start_date])
-        if category_id == 5:
-            brl_df = get_historical_close_price('BRL=X', datetime.strptime('2023-05-22', '%Y-%m-%d'))
-            brl_df['Date'] = pd.to_datetime(brl_df['Date'])
-            category_rentability['Date'] = pd.to_datetime(category_rentability['date'])
-            merged_df = pd.merge(category_rentability, brl_df, how='left', on='Date')
-            merged_df['Close'] = merged_df['Close'].fillna(0)
-            merged_df['amount'] = merged_df['amount'] + (100 * merged_df['Close'])
-            category_rentability = merged_df[['idcategory', 'amount', 'date']]
+
+        brl_df = get_historical_close_price('BRL=X', start_date)
+        brl_df['Date'] = pd.to_datetime(brl_df['Date'])
+        category_rentability['Date'] = pd.to_datetime(category_rentability['date'])
+        merged_df = pd.merge(category_rentability, brl_df, how='left', on='Date')
+        merged_df['Close'] = merged_df['Close'].fillna(0)
+        merged_df['amount'] = merged_df['amount'] + (merged_df['cash_usd'] * merged_df['Close']) + (merged_df['cash_brl'])
+        category_rentability = merged_df[['idcategory', 'amount', 'date']]
 
         self.dataframe_to_db(category_rentability, 'category_rentability')
 
